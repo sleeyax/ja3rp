@@ -5,10 +5,13 @@ import (
 	"github.com/sleeyax/ja3rp/net/http"
 	"github.com/sleeyax/ja3rp/net/http/httptest"
 	"io"
+	"net/url"
 	"os"
 	"strconv"
 	"testing"
 )
+
+var testPort = 1337
 
 type mock struct {
 	reached bool
@@ -32,25 +35,28 @@ func (dsm *destinationServerMock) ServeHTTP(w http.ResponseWriter, _ *http.Reque
 	fmt.Fprintf(w, "ok")
 }
 
-func TestMakeReverseProxyServer(t *testing.T) {
+func TestReverseProxyServer(t *testing.T) {
 	dsm := &destinationServerMock{}
 
 	// mock destination server
 	ds := httptest.NewServer(dsm)
 	defer ds.Close()
 
+	addr := "localhost:" + getPort(testPort)
+
 	// setup reverse proxy server
-	s, err := NewReverseProxyServer(ds.URL)
+	u, err := url.Parse(ds.URL)
 	if err != nil {
 		t.Fatal(err)
 	}
-	addr := "localhost:" + getPort(1337)
+	s := NewServer(addr, ServerOptions{
+		Destination: u,
+	})
+	defer s.Close()
 
 	// start listening in the background
 	go (func() {
-		if err = s.Listen(addr); err != nil {
-			t.Fatal(err)
-		}
+		s.ListenAndServe()
 	})()
 
 	// send HTTP request
@@ -68,20 +74,21 @@ func TestMakeReverseProxyServer(t *testing.T) {
 	}
 }
 
-func TestMakeServer(t *testing.T) {
+func TestServer(t *testing.T) {
 	expected := "ok"
+	addr := "localhost:" + getPort(testPort)
 
-	s := NewServer()
-	s.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	mux := NewMux()
+
+	s := NewServer(addr, ServerOptions{
+		Mux: mux,
+	})
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, expected)
 	})
 
-	addr := "localhost:" + getPort(1336)
-
 	go (func() {
-		if err := s.Listen(addr); err != nil {
-			t.Fatal(err)
-		}
+		s.ListenAndServe()
 	})()
 
 	res, err := http.Get("http://" + addr)
