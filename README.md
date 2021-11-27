@@ -53,4 +53,6 @@ func main() {
 }
 ```
 ## Licenses
+This project is licensed with the [MIT License](LICENSE).
+
 The included (and then modified) `net/http`, `internal/profile` and `crypto` packages fall under the [go source code license](./LICENSE_GO.txt).
