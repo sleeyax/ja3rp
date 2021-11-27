@@ -16,12 +16,24 @@ import (
 const testPort = 1337
 const goJA3Hash = "473cd7cb9faa642487833865d516e578"
 
-type mock struct {
+type destinationServerMock struct {
 	reached bool
 }
 
-type destinationServerMock struct {
-	mock
+// newInsecureClient creates a new HTTP client that can work with self-signed SSL certificates.
+func newInsecureClient() *http.Client {
+	return &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
+	}
+}
+
+func listenAndServe(s *http.Server) {
+	dir := path.Join("internal", "tests", "data")
+	s.ListenAndServeTLS(path.Join(dir, "localhost.crt"), path.Join(dir, "localhost.key"))
 }
 
 // getPort gets an available port by environment variable or uses the given fallback value if it's not set.
@@ -69,7 +81,7 @@ func TestReverseProxyServer(t *testing.T) {
 	}
 
 	// verify HTTP response
-	if res.StatusCode != 200 {
+	if res.StatusCode != http.StatusOK {
 		t.Fail()
 	}
 	if !dsm.reached {
@@ -100,7 +112,7 @@ func TestServer(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if res.StatusCode != 200 {
+	if res.StatusCode != http.StatusOK {
 		t.Fail()
 	}
 
@@ -116,22 +128,69 @@ func TestWhitelist(t *testing.T) {
 	s := NewServer(addr, ServerOptions{
 		Whitelist: []string{"a", "b", "c"},
 	})
-	defer s.Close()
 
-	go (func() {
-		dir := path.Join("internal", "tests", "data")
-		s.ListenAndServeTLS(path.Join(dir, "localhost.crt"), path.Join(dir, "localhost.key"))
-	})()
+	go listenAndServe(s)
 
-	client := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true,
-			},
-		},
-	}
+	client := newInsecureClient()
 
 	res, err := client.Get("https://" + addr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if res.StatusCode != http.StatusForbidden {
+		t.Fail()
+	}
+
+	s.Close()
+
+	s = NewServer(addr, ServerOptions{
+		Whitelist: []string{goJA3Hash},
+	})
+	defer s.Close()
+
+	go listenAndServe(s)
+
+	res, err = client.Get("https://" + addr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if res.StatusCode != http.StatusOK {
+		t.Fail()
+	}
+}
+
+func TestBlacklist(t *testing.T) {
+	addr := "localhost:" + getPort(testPort)
+
+	s := NewServer(addr, ServerOptions{
+		Blacklist: []string{"a", "b", "c"},
+	})
+
+	go listenAndServe(s)
+
+	client := newInsecureClient()
+
+	res, err := client.Get("https://" + addr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if res.StatusCode != http.StatusOK {
+		t.Fail()
+	}
+
+	s.Close()
+
+	s = NewServer(addr, ServerOptions{
+		Blacklist: []string{goJA3Hash},
+	})
+	defer s.Close()
+
+	go listenAndServe(s)
+
+	res, err = client.Get("https://" + addr)
 	if err != nil {
 		t.Fatal(err)
 	}
