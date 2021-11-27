@@ -394,6 +394,8 @@ func (m *clientHelloMsg) unmarshal(data []byte) bool {
 			return false
 		}
 
+		m.extensions = append(m.extensions, extension)
+
 		switch extension {
 		case extensionServerName:
 			// RFC 6066, Section 3
@@ -581,8 +583,6 @@ func (m *clientHelloMsg) unmarshal(data []byte) bool {
 			// Ignore unknown extensions.
 			continue
 		}
-
-		m.extensions = append(m.extensions, extension)
 
 		if !extData.Empty() {
 			return false
