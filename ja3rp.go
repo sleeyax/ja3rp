@@ -51,7 +51,7 @@ func (s ServerOptions) handleRoot(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if s.Destination == nil {
-		fmt.Fprintf(w, "Access allowed. JA3 hash: "+ja3Hash)
+		fmt.Fprintf(w, "Access granted. JA3 hash: "+ja3Hash)
 		return
 	}
 
