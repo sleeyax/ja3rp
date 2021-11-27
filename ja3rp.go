@@ -40,7 +40,14 @@ func (s ServerOptions) handleRoot(w http.ResponseWriter, r *http.Request) {
 
 	if inArray(ja3Hash, s.Blacklist) || (len(s.Whitelist) > 0 && !inArray(ja3Hash, s.Whitelist)) {
 		w.WriteHeader(http.StatusForbidden)
-		fmt.Fprintf(w, "Access forbidden.")
+
+		if s.OnBlocked != nil {
+			s.OnBlocked(w, r)
+		} else {
+			fmt.Fprintf(w, "Access forbidden.")
+		}
+
+		return
 	}
 
 	if s.Destination == nil {
