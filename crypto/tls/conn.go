@@ -115,6 +115,8 @@ type Conn struct {
 	activeCall int32
 
 	tmp [16]byte
+
+	JA3 string
 }
 
 // Access to net.Conn methods.

@@ -10,10 +10,10 @@ import (
 	"bufio"
 	"bytes"
 	"context"
-	"crypto/tls"
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/sleeyax/ja3rp/crypto/tls"
 	"github.com/sleeyax/ja3rp/net/http/internal/ascii"
 	"io"
 	"mime"
@@ -321,6 +321,8 @@ type Request struct {
 	// It is unexported to prevent people from using Context wrong
 	// and mutating the contexts held by callers of the same request.
 	ctx context.Context
+
+	JA3 string
 }
 
 // Context returns the request's context. To change the context, use

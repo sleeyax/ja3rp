@@ -12,10 +12,12 @@ import (
 	"crypto/ecdsa"
 	"crypto/ed25519"
 	"crypto/elliptic"
+	"crypto/md5"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha512"
 	"crypto/x509"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
@@ -444,6 +446,10 @@ type ClientHelloInfo struct {
 
 	// ctx is the context of the handshake that is in progress.
 	ctx context.Context
+
+	Extensions []uint16
+
+	Version uint16
 }
 
 // Context returns the context of the handshake that is in progress.
@@ -451,6 +457,60 @@ type ClientHelloInfo struct {
 // if any, and is canceled when the handshake concludes.
 func (c *ClientHelloInfo) Context() context.Context {
 	return c.ctx
+}
+
+func (c *ClientHelloInfo) JA3() string {
+	greaseTable := map[uint16]bool{
+		0x0a0a: true, 0x1a1a: true, 0x2a2a: true, 0x3a3a: true,
+		0x4a4a: true, 0x5a5a: true, 0x6a6a: true, 0x7a7a: true,
+		0x8a8a: true, 0x9a9a: true, 0xaaaa: true, 0xbaba: true,
+		0xcaca: true, 0xdada: true, 0xeaea: true, 0xfafa: true,
+	}
+
+	// SSLVersion,Cipher,SSLExtension,EllipticCurve,EllipticCurvePointFormat
+
+	s := ""
+	s += fmt.Sprintf("%d,", c.Version)
+
+	vals := []string{}
+	for _, v := range c.CipherSuites {
+		vals = append(vals, fmt.Sprintf("%d", v))
+	}
+
+	s += fmt.Sprintf("%s,", strings.Join(vals, "-"))
+
+	vals = []string{}
+	for _, v := range c.Extensions {
+		if _, ok := greaseTable[v]; ok {
+			continue
+		}
+
+		vals = append(vals, fmt.Sprintf("%d", v))
+	}
+
+	s += fmt.Sprintf("%s,", strings.Join(vals, "-"))
+
+	vals = []string{}
+	for _, v := range c.SupportedCurves {
+		vals = append(vals, fmt.Sprintf("%d", v))
+	}
+
+	s += fmt.Sprintf("%s,", strings.Join(vals, "-"))
+
+	vals = []string{}
+	for _, v := range c.SupportedPoints {
+		vals = append(vals, fmt.Sprintf("%d", v))
+	}
+
+	s += fmt.Sprintf("%s", strings.Join(vals, "-"))
+
+	return s
+}
+
+func (c *ClientHelloInfo) JA3Digest() string {
+	hasher := md5.New()
+	hasher.Write([]byte(c.JA3()))
+	return hex.EncodeToString(hasher.Sum(nil))
 }
 
 // CertificateRequestInfo contains information from a server's

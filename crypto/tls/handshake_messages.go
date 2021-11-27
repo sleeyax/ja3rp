@@ -92,6 +92,7 @@ type clientHelloMsg struct {
 	pskModes                         []uint8
 	pskIdentities                    []pskIdentity
 	pskBinders                       [][]byte
+	extensions                       []uint16
 }
 
 func (m *clientHelloMsg) marshal() []byte {
@@ -580,6 +581,8 @@ func (m *clientHelloMsg) unmarshal(data []byte) bool {
 			// Ignore unknown extensions.
 			continue
 		}
+
+		m.extensions = append(m.extensions, extension)
 
 		if !extData.Empty() {
 			return false

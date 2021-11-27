@@ -51,6 +51,7 @@ func (c *Conn) serverHandshake(ctx context.Context) error {
 			ctx:         ctx,
 			clientHello: clientHello,
 		}
+		c.JA3 = clientHelloInfo(ctx, c, clientHello).JA3()
 		return hs.handshake()
 	}
 
@@ -59,6 +60,8 @@ func (c *Conn) serverHandshake(ctx context.Context) error {
 		ctx:         ctx,
 		clientHello: clientHello,
 	}
+	c.JA3 = clientHelloInfo(ctx, c, clientHello).JA3()
+
 	return hs.handshake()
 }
 
@@ -871,5 +874,7 @@ func clientHelloInfo(ctx context.Context, c *Conn, clientHello *clientHelloMsg) 
 		Conn:              c.conn,
 		config:            c.config,
 		ctx:               ctx,
+		Extensions:        clientHello.extensions,
+		Version:           clientHello.vers,
 	}
 }

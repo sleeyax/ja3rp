@@ -62,11 +62,6 @@ type muxEntry struct {
 // NewMux allocates and returns a new Mux.
 func NewMux() *Mux { return new(Mux) }
 
-// defaultMuxPtr is the default Mux used by Serve.
-var defaultMuxPtr = &defaultMux
-
-var defaultMux Mux
-
 // cleanPath returns the canonical path for p, eliminating . and .. elements.
 func cleanPath(p string) string {
 	if p == "" {
@@ -292,16 +287,4 @@ func (mux *Mux) HandleFunc(pattern string, handler func(http.ResponseWriter, *ht
 		panic("http: nil handler")
 	}
 	mux.Handle(pattern, http.HandlerFunc(handler))
-}
-
-// Handle registers the handler for the given pattern
-// in the defaultMuxPtr.
-// The documentation for Mux explains how patterns are matched.
-func Handle(pattern string, handler http.Handler) { defaultMuxPtr.Handle(pattern, handler) }
-
-// HandleFunc registers the handler function for the given pattern
-// in the defaultMuxPtr.
-// The documentation for Mux explains how patterns are matched.
-func HandleFunc(pattern string, handler func(http.ResponseWriter, *http.Request)) {
-	defaultMuxPtr.HandleFunc(pattern, handler)
 }

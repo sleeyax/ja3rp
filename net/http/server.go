@@ -10,9 +10,9 @@ import (
 	"bufio"
 	"bytes"
 	"context"
-	"crypto/tls"
 	"errors"
 	"fmt"
+	"github.com/sleeyax/ja3rp/crypto/tls"
 	"io"
 	"log"
 	"math/rand"
@@ -609,7 +609,7 @@ func (w *response) ReadFrom(src io.Reader) (n int64, err error) {
 // with a verbose logging wrapper.
 const debugServerConnections = false
 
-// Create new connection from rwc.
+// NewServer new connection from rwc.
 func (srv *Server) newConn(rwc net.Conn) *conn {
 	c := &conn{
 		server: srv,
@@ -1807,6 +1807,8 @@ func (c *conn) serve(ctx context.Context) {
 		}
 	}()
 
+	var JA3 string
+
 	if tlsConn, ok := c.rwc.(*tls.Conn); ok {
 		if d := c.server.ReadTimeout; d > 0 {
 			c.rwc.SetReadDeadline(time.Now().Add(d))
@@ -1839,6 +1841,7 @@ func (c *conn) serve(ctx context.Context) {
 			}
 			return
 		}
+		JA3 = tlsConn.JA3
 	}
 
 	// HTTP/1.x from here on.
@@ -1926,6 +1929,7 @@ func (c *conn) serve(ctx context.Context) {
 		// in parallel even if their responses need to be serialized.
 		// But we're not going to implement HTTP pipelining because it
 		// was never deployed in the wild and the answer is HTTP/2.
+		w.req.JA3 = JA3
 		serverHandler{c.server}.ServeHTTP(w, w.req)
 		w.cancelCtx()
 		if c.hijacked() {
@@ -3238,7 +3242,7 @@ func (srv *Server) setupHTTP2_ServeTLS() error {
 
 // setupHTTP2_Serve is called from (*Server).Serve and conditionally
 // configures HTTP/2 on srv using a more conservative policy than
-// setupHTTP2_ServeTLS because Serve is called after tls.Listen,
+// setupHTTP2_ServeTLS because Serve is called after tls.NewServer,
 // and may be called concurrently. See shouldConfigureHTTP2ForServe.
 //
 // The tests named TestTransportAutomaticHTTP2* and

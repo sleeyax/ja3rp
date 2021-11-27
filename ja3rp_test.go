@@ -2,16 +2,19 @@ package ja3rp
 
 import (
 	"fmt"
+	"github.com/sleeyax/ja3rp/crypto/tls"
 	"github.com/sleeyax/ja3rp/net/http"
 	"github.com/sleeyax/ja3rp/net/http/httptest"
 	"io"
 	"net/url"
 	"os"
+	"path"
 	"strconv"
 	"testing"
 )
 
-var testPort = 1337
+const testPort = 1337
+const goJA3Hash = "473cd7cb9faa642487833865d516e578"
 
 type mock struct {
 	reached bool
@@ -83,6 +86,7 @@ func TestServer(t *testing.T) {
 	s := NewServer(addr, ServerOptions{
 		Mux: mux,
 	})
+	defer s.Close()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, expected)
 	})
@@ -103,5 +107,36 @@ func TestServer(t *testing.T) {
 	body, _ := io.ReadAll(res.Body)
 	if bodyStr := string(body); bodyStr != expected {
 		t.Errorf("Invalid body. Expected '%s' but got '%s'", expected, bodyStr)
+	}
+}
+
+func TestWhitelist(t *testing.T) {
+	addr := "localhost:" + getPort(testPort)
+
+	s := NewServer(addr, ServerOptions{
+		Whitelist: []string{"a", "b", "c"},
+	})
+	defer s.Close()
+
+	go (func() {
+		dir := path.Join("internal", "tests", "data")
+		s.ListenAndServeTLS(path.Join(dir, "localhost.crt"), path.Join(dir, "localhost.key"))
+	})()
+
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
+	}
+
+	res, err := client.Get("https://" + addr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if res.StatusCode != http.StatusForbidden {
+		t.Fail()
 	}
 }
