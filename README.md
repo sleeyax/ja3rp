@@ -14,9 +14,20 @@ $ go install github.com/sleeyax/ja3rp
 ```
 
 ## Usage
-The following example starts a HTTPS server and filters incoming traffic based on JA3 hash.
+### Preparation
+A JA3 hash is constructed from a TLS ClientHello packet.
+For this reason the JA3RP server will need an SSL certificate in order to work.
+
+You can generate a self-signed certificate using the following commands:
+```
+$ openssl req -new -subj "/C=US/ST=Utah/CN=localhost" -newkey rsa:2048 -nodes -keyout localhost.key -out localhost.csr
+$ openssl x509 -req -days 365 -in localhost.csr -signkey localhost.key -out localhost.crt
+```
+
+### Package
+The following example starts an HTTPS server and filters incoming traffic based on a JA3 hash.
 If the hash is found in the whitelist the traffic is forwarded to the configured destination server.
-Otherwise or if blacklisted the request will be blocked.
+Otherwise or if blacklisted the request is blocked.
 
 ```go
 package main
@@ -52,6 +63,15 @@ func main() {
 	log.Fatal(err)
 }
 ```
+
+### CLI
+```
+$ ja3rp -h
+Usage: ja3rp -a <address> [-d <destination URL> -c <cert file> -k <cert key> -w <whitelist file> -b <blacklist file>]
+Example: $ ja3rp -a localhost:1337 -d https://example.com -c certificate.crt -k certificate.key -w whitelist.txt -b blacklist.txt
+```
+Hashes should be stored in .txt files, each separated by a new line.
+
 ## Licenses
 This project is licensed with the [MIT License](LICENSE).
 
