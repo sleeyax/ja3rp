@@ -8,9 +8,9 @@ package cookiejar
 import (
 	"errors"
 	"fmt"
+	"github.com/sleeyax/ja3rp/net/http"
 	"github.com/sleeyax/ja3rp/net/http/internal/ascii"
 	"net"
-	"net/http"
 	"net/url"
 	"sort"
 	"strings"

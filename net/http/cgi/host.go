@@ -17,10 +17,10 @@ package cgi
 import (
 	"bufio"
 	"fmt"
+	"github.com/sleeyax/ja3rp/net/http"
 	"io"
 	"log"
 	"net"
-	"net/http"
 	"net/textproto"
 	"os"
 	"os/exec"

@@ -6,7 +6,7 @@ package cookiejar
 
 import (
 	"fmt"
-	"net/http"
+	"github.com/sleeyax/ja3rp/net/http"
 	"net/url"
 	"sort"
 	"strings"

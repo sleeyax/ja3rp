@@ -9,7 +9,7 @@ package http
 import (
 	"bufio"
 	"bytes"
-	"crypto/tls"
+	"github.com/sleeyax/ja3rp/crypto/tls"
 	"errors"
 	"fmt"
 	"io"

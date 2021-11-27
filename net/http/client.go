@@ -11,7 +11,7 @@ package http
 
 import (
 	"context"
-	"crypto/tls"
+	"github.com/sleeyax/ja3rp/crypto/tls"
 	"encoding/base64"
 	"errors"
 	"fmt"

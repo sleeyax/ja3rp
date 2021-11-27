@@ -7,9 +7,9 @@ package httputil
 import (
 	"bufio"
 	"errors"
+	"github.com/sleeyax/ja3rp/net/http"
 	"io"
 	"net"
-	"net/http"
 	"net/textproto"
 	"sync"
 )

@@ -6,9 +6,9 @@ package httptest
 
 import (
 	"bufio"
+	"github.com/sleeyax/ja3rp/net/http"
 	"io"
 	"net"
-	"net/http"
 	"testing"
 )
 

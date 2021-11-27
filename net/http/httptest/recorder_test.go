@@ -6,8 +6,8 @@ package httptest
 
 import (
 	"fmt"
+	"github.com/sleeyax/ja3rp/net/http"
 	"io"
-	"net/http"
 	"testing"
 )
 

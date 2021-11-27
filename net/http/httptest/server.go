@@ -7,14 +7,14 @@
 package httptest
 
 import (
-	"crypto/tls"
 	"crypto/x509"
 	"flag"
 	"fmt"
+	"github.com/sleeyax/ja3rp/crypto/tls"
+	"github.com/sleeyax/ja3rp/net/http"
 	"github.com/sleeyax/ja3rp/net/http/internal/testcert"
 	"log"
 	"net"
-	"net/http"
 	"os"
 	"strings"
 	"sync"

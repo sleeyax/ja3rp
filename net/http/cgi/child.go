@@ -9,12 +9,12 @@ package cgi
 
 import (
 	"bufio"
-	"crypto/tls"
 	"errors"
 	"fmt"
+	"github.com/sleeyax/ja3rp/crypto/tls"
+	"github.com/sleeyax/ja3rp/net/http"
 	"io"
 	"net"
-	"net/http"
 	"net/url"
 	"os"
 	"strconv"

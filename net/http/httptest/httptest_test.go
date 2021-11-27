@@ -5,9 +5,9 @@
 package httptest
 
 import (
-	"crypto/tls"
+	"github.com/sleeyax/ja3rp/crypto/tls"
+	"github.com/sleeyax/ja3rp/net/http"
 	"io"
-	"net/http"
 	"net/url"
 	"reflect"
 	"strings"

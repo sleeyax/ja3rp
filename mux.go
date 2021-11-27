@@ -3,8 +3,8 @@ package ja3rp
 // Mux was respectfully copy-pasted (and slightly edited afterwards) from the following source: https://github.com/golang/go/blob/master/src/net/http/server.go
 
 import (
+	"github.com/sleeyax/ja3rp/net/http"
 	"net"
-	"net/http"
 	"net/url"
 	"path"
 	"sort"

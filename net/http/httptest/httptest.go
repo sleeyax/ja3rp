@@ -8,9 +8,9 @@ package httptest
 import (
 	"bufio"
 	"bytes"
-	"crypto/tls"
+	"github.com/sleeyax/ja3rp/crypto/tls"
+	"github.com/sleeyax/ja3rp/net/http"
 	"io"
-	"net/http"
 	"strings"
 )
 

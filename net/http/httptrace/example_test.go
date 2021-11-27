@@ -6,8 +6,8 @@ package httptrace_test
 
 import (
 	"fmt"
+	"github.com/sleeyax/ja3rp/net/http"
 	"log"
-	"net/http"
 	"net/http/httptrace"
 )
 

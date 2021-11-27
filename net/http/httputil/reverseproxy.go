@@ -9,11 +9,11 @@ package httputil
 import (
 	"context"
 	"fmt"
+	"github.com/sleeyax/ja3rp/net/http"
 	"github.com/sleeyax/ja3rp/net/http/internal/ascii"
 	"io"
 	"log"
 	"net"
-	"net/http"
 	"net/textproto"
 	"net/url"
 	"strings"

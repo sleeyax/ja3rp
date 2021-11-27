@@ -2,8 +2,8 @@ package ja3rp
 
 import (
 	"fmt"
-	"net/http"
-	"net/http/httputil"
+	"github.com/sleeyax/ja3rp/net/http"
+	"github.com/sleeyax/ja3rp/net/http/httputil"
 	"net/url"
 )
 

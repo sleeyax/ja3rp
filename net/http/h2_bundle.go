@@ -25,7 +25,7 @@ import (
 	"compress/gzip"
 	"context"
 	"crypto/rand"
-	"crypto/tls"
+	"github.com/sleeyax/ja3rp/crypto/tls"
 	"encoding/binary"
 	"errors"
 	"fmt"

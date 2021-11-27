@@ -14,7 +14,7 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net/http"
+	"github.com/sleeyax/ja3rp/net/http"
 	"os"
 	"os/exec"
 	"strconv"

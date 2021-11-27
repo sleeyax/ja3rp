@@ -7,8 +7,8 @@ package fcgi
 import (
 	"bytes"
 	"errors"
+	"github.com/sleeyax/ja3rp/net/http"
 	"io"
-	"net/http"
 	"strings"
 	"testing"
 	"time"

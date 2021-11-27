@@ -2,9 +2,9 @@ package ja3rp
 
 import (
 	"fmt"
+	"github.com/sleeyax/ja3rp/net/http"
+	"github.com/sleeyax/ja3rp/net/http/httptest"
 	"io"
-	"net/http"
-	"net/http/httptest"
 	"os"
 	"strconv"
 	"testing"
