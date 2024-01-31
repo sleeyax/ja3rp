@@ -1,3 +1,6 @@
+> [!IMPORTANT]  
+> This project is no longer maintained. Consider [guardgress](https://github.com/h3adex/guardgress) if you're looking for a production-ready alternative.
+
 # JA3RP (JA3 Reverse Proxy)
 Ja3RP is a basic reverse proxy server that filters traffic based on [JA3](https://github.com/salesforce/ja3) fingerprints.
 It can also operate as a regular HTTP server for testing purposes.
